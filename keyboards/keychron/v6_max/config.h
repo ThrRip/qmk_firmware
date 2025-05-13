@@ -16,6 +16,10 @@
 
 #pragma once
 
+// ThrRip start
+#define MIDI_ADVANCED
+// ThrRip end
+
 /* Encoder Configuration */
 #define ENCODER_DEFAULT_POS 0x3
 #define ENCODER_MAP_KEY_DELAY 2

@@ -17,6 +17,30 @@
 #include QMK_KEYBOARD_H
 #include "keychron_common.h"
 
+// ThrRip start
+extern MidiDevice midi_device;
+
+#define MIDI_CC_NUM_BASE       102
+#define MIDI_CC_NUM_OFFSET_MAX 15
+#define MIDI_CC_VAL_ONE_MIN    63
+#define MIDI_CC_VAL_ONE_MAX    65
+#define MIDI_CC_VAL_FULL_MIN   0
+#define MIDI_CC_VAL_FULL_MAX   127
+
+uint8_t midi_cc_num_offset    = 0;
+bool    midi_cc_val_mode_full = false;
+
+enum midi_keycodes {
+    // QK_USER_0 = 0x7E40 = CUSTOM(64) in VIA
+    MIDI_CCSMIN = QK_USER_0, // CC Send Min Value
+    MIDI_CCSMAX,             // CC Send Max Value
+    MIDI_CCNINC,             // CC Number Increment
+    MIDI_CCNDEC,             // CC Number Decrement
+    MIDI_CCNRST,             // CC Number Reset
+    MIDI_CCVTOG,             // CC Value Mode Toggle (<-63 65-> or <-0 127->)
+};
+// ThrRip end
+
 enum layers {
     MAC_BASE,
     MAC_FN,
@@ -69,5 +93,83 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_keychron_common(keycode, record)) {
         return false;
     }
-    return true;
+    // ThrRip start
+    switch (keycode) {
+        case MIDI_CCSMIN:
+            if (record->event.pressed) {
+                if (midi_cc_val_mode_full) {
+                    midi_send_cc(
+                        &midi_device, midi_config.channel,
+                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                        MIDI_CC_VAL_FULL_MIN
+                    );
+                }
+                else {
+                    midi_send_cc(
+                        &midi_device, midi_config.channel,
+                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                        MIDI_CC_VAL_ONE_MIN
+                    );
+                }
+            }
+            return false;
+
+        case MIDI_CCSMAX:
+            if (record->event.pressed) {
+                if (midi_cc_val_mode_full) {
+                    midi_send_cc(
+                        &midi_device, midi_config.channel,
+                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                        MIDI_CC_VAL_FULL_MAX
+                    );
+                }
+                else {
+                    midi_send_cc(
+                        &midi_device, midi_config.channel,
+                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                        MIDI_CC_VAL_ONE_MAX
+                    );
+                }
+            }
+            return false;
+
+        case MIDI_CCNINC:
+            if (record->event.pressed) {
+                if (midi_cc_num_offset != MIDI_CC_NUM_OFFSET_MAX) {
+                    midi_cc_num_offset++;
+                }
+                else {
+                    midi_cc_num_offset = 0;
+                }
+            }
+            return false;
+
+        case MIDI_CCNDEC:
+            if (record->event.pressed) {
+                if (midi_cc_num_offset != 0) {
+                    midi_cc_num_offset--;
+                }
+                else {
+                    midi_cc_num_offset = MIDI_CC_NUM_OFFSET_MAX;
+                }
+            }
+            return false;
+
+        case MIDI_CCNRST:
+            if (record->event.pressed) {
+                midi_cc_num_offset = 0;
+            }
+            return false;
+
+        case MIDI_CCVTOG:
+            if (record->event.pressed) {
+                midi_cc_val_mode_full = !midi_cc_val_mode_full;
+            }
+            return false;
+
+        default:
+            return true;
+    }
+    // return true;
+    // ThrRip end
 }
