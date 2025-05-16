@@ -36,6 +36,10 @@ enum midi_keycodes {
     MIDI_CCSMAX,             // CC Send Max Value
     MIDI_CCNINC,             // CC Number Increment
     MIDI_CCNDEC,             // CC Number Decrement
+    MIDI_CCNSB3,             // CC Number Selector Bit 3
+    MIDI_CCNSB2,             // CC Number Selector Bit 2
+    MIDI_CCNSB1,             // CC Number Selector Bit 1
+    MIDI_CCNSB0,             // CC Number Selector Bit 0
     MIDI_CCNRST,             // CC Number Reset
     MIDI_CCVTOG,             // CC Value Mode Toggle (<-63 65-> or <-0 127->)
 };
@@ -138,6 +142,30 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 else {
                     midi_cc_num_offset = MIDI_CC_NUM_OFFSET_MAX;
                 }
+            }
+            return false;
+
+        case MIDI_CCNSB3:
+            if (record->event.pressed) {
+                midi_cc_num_offset ^= 1 << 3;
+            }
+            return false;
+
+        case MIDI_CCNSB2:
+            if (record->event.pressed) {
+                midi_cc_num_offset ^= 1 << 2;
+            }
+            return false;
+
+        case MIDI_CCNSB1:
+            if (record->event.pressed) {
+                midi_cc_num_offset ^= 1 << 1;
+            }
+            return false;
+
+        case MIDI_CCNSB0:
+            if (record->event.pressed) {
+                midi_cc_num_offset ^= 1;
             }
             return false;
 
