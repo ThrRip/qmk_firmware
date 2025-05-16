@@ -97,39 +97,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case MIDI_CCSMIN:
             if (record->event.pressed) {
-                if (midi_cc_val_mode_full) {
-                    midi_send_cc(
-                        &midi_device, midi_config.channel,
-                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
-                        MIDI_CC_VAL_FULL_MIN
-                    );
-                }
-                else {
-                    midi_send_cc(
-                        &midi_device, midi_config.channel,
-                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                midi_send_cc(
+                    &midi_device, midi_config.channel,
+                    MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                    midi_cc_val_mode_full ?
+                        MIDI_CC_VAL_FULL_MIN :
                         MIDI_CC_VAL_ONE_MIN
-                    );
-                }
+                );
             }
             return false;
 
         case MIDI_CCSMAX:
             if (record->event.pressed) {
-                if (midi_cc_val_mode_full) {
-                    midi_send_cc(
-                        &midi_device, midi_config.channel,
-                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
-                        MIDI_CC_VAL_FULL_MAX
-                    );
-                }
-                else {
-                    midi_send_cc(
-                        &midi_device, midi_config.channel,
-                        MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                midi_send_cc(
+                    &midi_device, midi_config.channel,
+                    MIDI_CC_NUM_BASE + midi_cc_num_offset,
+                    midi_cc_val_mode_full ?
+                        MIDI_CC_VAL_FULL_MAX :
                         MIDI_CC_VAL_ONE_MAX
-                    );
-                }
+                );
             }
             return false;
 
