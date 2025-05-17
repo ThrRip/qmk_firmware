@@ -22,10 +22,17 @@ extern MidiDevice midi_device;
 
 #define MIDI_CC_NUM_BASE       102
 #define MIDI_CC_NUM_OFFSET_MAX 15
-#define MIDI_CC_VAL_ONE_MIN    63
-#define MIDI_CC_VAL_ONE_MAX    65
-#define MIDI_CC_VAL_FULL_MIN   0
-#define MIDI_CC_VAL_FULL_MAX   127
+
+#define MIDI_CC_NUM_SEL_INDIC
+#define MIDI_CC_NUM_SEL_INDIC_INDEX_B3 16
+#define MIDI_CC_NUM_SEL_INDIC_INDEX_B2 17
+#define MIDI_CC_NUM_SEL_INDIC_INDEX_B1 18
+#define MIDI_CC_NUM_SEL_INDIC_INDEX_B0 19
+
+#define MIDI_CC_VAL_ONE_MIN  63
+#define MIDI_CC_VAL_ONE_MAX  65
+#define MIDI_CC_VAL_FULL_MIN 0
+#define MIDI_CC_VAL_FULL_MAX 127
 
 uint8_t midi_cc_num_offset    = 0;
 bool    midi_cc_val_mode_full = false;
@@ -187,3 +194,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // return true;
     // ThrRip end
 }
+
+// ThrRip start
+#ifdef MIDI_CC_NUM_SEL_INDIC
+bool rgb_matrix_indicators_user(void) {
+    if (midi_cc_num_offset & (1 << 3)) {
+        rgb_matrix_set_color(MIDI_CC_NUM_SEL_INDIC_INDEX_B3, RGB_WHITE);
+    }
+    if (midi_cc_num_offset & (1 << 2)) {
+        rgb_matrix_set_color(MIDI_CC_NUM_SEL_INDIC_INDEX_B2, RGB_WHITE);
+    }
+    if (midi_cc_num_offset & (1 << 1)) {
+        rgb_matrix_set_color(MIDI_CC_NUM_SEL_INDIC_INDEX_B1, RGB_WHITE);
+    }
+    if (midi_cc_num_offset & 1) {
+        rgb_matrix_set_color(MIDI_CC_NUM_SEL_INDIC_INDEX_B0, RGB_WHITE);
+    }
+    return true;
+}
+#endif
+// ThrRip end
