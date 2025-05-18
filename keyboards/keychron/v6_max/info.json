@@ -10,16 +10,15 @@
     },
     "features": {
         "bootmagic": true,
-        "extrakey" : false,
-        "mousekey" : false,
+        "extrakey" : true,
+        "mousekey" : true,
         "dip_switch" : true,
-        "nkro" : false,
+        "nkro" : true,
         "encoder": true,
         "encoder_map": true,
         "rgb_matrix": true,
         "raw" : true,
-        "send_string": true,
-        "midi": true
+        "send_string": true
     },
     "encoder": {
         "rotary": [
