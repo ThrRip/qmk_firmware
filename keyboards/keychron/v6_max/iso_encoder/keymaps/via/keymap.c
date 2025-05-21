@@ -132,23 +132,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         case MIDI_CCNINC:
             if (record->event.pressed) {
-                if (midi_cc_num_offset != MIDI_CC_NUM_OFFSET_MAX) {
-                    midi_cc_num_offset++;
-                }
-                else {
-                    midi_cc_num_offset = 0;
-                }
+                midi_cc_num_offset != MIDI_CC_NUM_OFFSET_MAX ?
+                    midi_cc_num_offset++ :
+                    (midi_cc_num_offset = 0);
             }
             return false;
 
         case MIDI_CCNDEC:
             if (record->event.pressed) {
-                if (midi_cc_num_offset != 0) {
-                    midi_cc_num_offset--;
-                }
-                else {
-                    midi_cc_num_offset = MIDI_CC_NUM_OFFSET_MAX;
-                }
+                midi_cc_num_offset != 0 ?
+                    midi_cc_num_offset-- :
+                    (midi_cc_num_offset = MIDI_CC_NUM_OFFSET_MAX);
             }
             return false;
 
