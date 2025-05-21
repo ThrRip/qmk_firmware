@@ -29,18 +29,17 @@ extern MidiDevice midi_device;
 #define MIDI_CC_NUM_SEL_INDIC_INDEX_B1 18
 #define MIDI_CC_NUM_SEL_INDIC_INDEX_B0 19
 
-#define MIDI_CC_VAL_ONE_MIN  63
-#define MIDI_CC_VAL_ONE_MAX  65
-#define MIDI_CC_VAL_FULL_MIN 0
-#define MIDI_CC_VAL_FULL_MAX 127
-
-uint8_t midi_cc_num_offset    = 0;
-bool    midi_cc_val_mode_full = false;
+uint8_t midi_cc_num_offset     = 0;
+uint8_t midi_cc_val_offset_exp = 0;
 
 enum midi_keycodes {
     // QK_USER_0 = 0x7E40 = CUSTOM(64) in VIA
     MIDI_CCSMIN = QK_USER_0, // CC Send Min Value
+                             //     (64 - 2 ^ midi_cc_val_offset_exp)
     MIDI_CCSMAX,             // CC Send Max Value
+                             //     (64 + 2 ^ midi_cc_val_offset_exp,
+                             //     but not greater than 127)
+    MIDI_CCSMID,             // CC Send Midpoint Value (64)
     MIDI_CCNINC,             // CC Number Increment
     MIDI_CCNDEC,             // CC Number Decrement
     MIDI_CCNSB3,             // CC Number Selector Bit 3
@@ -48,7 +47,9 @@ enum midi_keycodes {
     MIDI_CCNSB1,             // CC Number Selector Bit 1
     MIDI_CCNSB0,             // CC Number Selector Bit 0
     MIDI_CCNRST,             // CC Number Reset
-    MIDI_CCVTOG,             // CC Value Mode Toggle (<-63 65-> or <-0 127->)
+    MIDI_CCVOEI,             // CC Value Offset Exponent Increment
+    MIDI_CCVOED,             // CC Value Offset Exponent Decrement
+    MIDI_CCVOER,             // CC Value Offset Exponent Reset
 };
 // ThrRip end
 
@@ -111,9 +112,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 midi_send_cc(
                     &midi_device, midi_config.channel,
                     MIDI_CC_NUM_BASE + midi_cc_num_offset,
-                    midi_cc_val_mode_full ?
-                        MIDI_CC_VAL_FULL_MIN :
-                        MIDI_CC_VAL_ONE_MIN
+                    64 - (1 << midi_cc_val_offset_exp)
                 );
             }
             return false;
@@ -123,9 +122,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 midi_send_cc(
                     &midi_device, midi_config.channel,
                     MIDI_CC_NUM_BASE + midi_cc_num_offset,
-                    midi_cc_val_mode_full ?
-                        MIDI_CC_VAL_FULL_MAX :
-                        MIDI_CC_VAL_ONE_MAX
+                    // 64 + 2 ^ 6 = 128, which is out of range
+                    midi_cc_val_offset_exp != 6 ? 64 + (1 << midi_cc_val_offset_exp) : 127
+                );
+            }
+            return false;
+
+        case MIDI_CCSMID:
+            if (record->event.pressed) {
+                midi_send_cc(
+                    &midi_device, midi_config.channel,
+                    MIDI_CC_NUM_BASE + midi_cc_num_offset, 64
                 );
             }
             return false;
@@ -176,9 +183,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
 
-        case MIDI_CCVTOG:
+        case MIDI_CCVOEI:
             if (record->event.pressed) {
-                midi_cc_val_mode_full = !midi_cc_val_mode_full;
+                midi_cc_val_offset_exp != 6 ?
+                    midi_cc_val_offset_exp++ :
+                    (midi_cc_val_offset_exp = 0);
+            }
+            return false;
+
+        case MIDI_CCVOED:
+            if (record->event.pressed) {
+                midi_cc_val_offset_exp != 0 ?
+                    midi_cc_val_offset_exp-- :
+                    (midi_cc_val_offset_exp = 6);
+            }
+            return false;
+
+        case MIDI_CCVOER:
+            if (record->event.pressed) {
+                midi_cc_val_offset_exp = 0;
             }
             return false;
 
