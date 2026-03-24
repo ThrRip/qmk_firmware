@@ -7,3 +7,5 @@ VIA_ENABLE = yes
 # NKRO_ENABLE      = no
 KEYBOARD_SHARED_EP = yes
 MIDI_ENABLE        = yes
+
+RGB_MATRIX_CUSTOM_USER = yes
