@@ -7,11 +7,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -40,9 +40,6 @@
 
 /* Use local kecodes file */
 #define CUSTOM_KEYCODES_ENABLE
-
-/* WB32 UID reg address */
-#define UID_BASE (0x1FFFF204UL)
 
 /* Factory test keys */
 #define FN_KEY_1 MO(1)

@@ -7,11 +7,11 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include QMK_KEYBOARD_H
@@ -165,6 +165,7 @@ bool kc_raw_hid_rx(uint8_t src, uint8_t *data, uint8_t length) {
 
         case KC_GET_DEFAULT_LAYER:
             data[1] = get_highest_layer(default_layer_state);
+            data[2] = get_highest_layer(layer_state);
             break;
 
         case KC_MISC_CMD_GROUP:
