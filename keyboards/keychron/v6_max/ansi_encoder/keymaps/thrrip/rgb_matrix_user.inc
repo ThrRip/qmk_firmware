@@ -91,7 +91,7 @@ static bool thrrip_1(effect_params_t *params) {
             rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
         } else if (i == RGB_MATRIX_thrrip_1_LAYER_LED) {
             hsv_t hsv = rgb_matrix_get_hsv();
-            if (layer_state_is(MAC_BASE)) {
+            if (layer_state_cmp(default_layer_state, MAC_BASE)) {
                 hsv.s = 0;
             }
             rgb_t rgb = hsv_to_rgb(hsv);
